@@ -9,9 +9,9 @@ const int inputPin = 2;
 
 int inputstream = 0;   
 
-long packeddata = 0; 
-long angle = 0;   
-long state = 0;
+long int packeddata = 0; 
+long int angle = 0;   
+long int state = 0;
 
 int angulo; 
 int status; 
@@ -61,20 +61,29 @@ void loop(){
 
   angulo = int(angle);
   status = int(state);
+  
 
   // RESET DATA TO RECALCULATE
   packeddata = 0;
   angle = 0;
 }
 
+
+
 // SEND THE ANGLE AWAYS THE SERIAL GET A '\n' CHAR  
 void serialEvent(){
   while(Serial.available()){
     char inChar = (char)Serial.read();
     if (inChar == '\n'){
-      Serial.print(angulo);
-      Serial.print(',');
-      Serial.println(status);
+      
+      union{
+        int intValues[2] = { angulo, status };
+        byte byteValues[4];
+      } p;
+      
+      for (int i = 0; i < 4 ; i ++)
+        Serial.print((char)p.byteValues[i]);
+      Serial.println();
     }
   }
 }
